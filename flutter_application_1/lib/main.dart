@@ -35,12 +35,15 @@ class MyAppState extends ChangeNotifier {
   }
 
   var favorites = <WordPair>[];
+  var messages = [];
 
   void toggleFavorite() {
     if (favorites.contains(current)) {
       favorites.remove(current);
+      messages.remove(current.asString);
     } else {
       favorites.add(current);
+      messages.add(current.asString);
     }
 
     notifyListeners();
@@ -66,49 +69,52 @@ class _MyHomePageState extends State<MyHomePage> {
         page = GeneratorPage();
         break;
       case 1:
-        page = Placeholder();
+        page = LikePage();
         break;
       default:
         throw UnimplementedError('no widget for $selectedIndex');
     }
 
-    return Scaffold(
-      body: Row(
-        children: [
-          SafeArea(
-            child: NavigationRail(
-              extended: false,
-              destinations: [
-                NavigationRailDestination(
-                  icon: Icon(Icons.home),
-                  label: Text('Home'),
-                ),
-                NavigationRailDestination(
-                  icon: Icon(Icons.favorite),
-                  label: Text('Favorites'),
-                ),
-              ],
-              selectedIndex: selectedIndex,
-              onDestinationSelected: (value) {
-                setState(() {
-                  selectedIndex = value;
-                });
-              },
+    return LayoutBuilder(builder: (context, constraints) {
+      return Scaffold(
+        body: Row(
+          children: [
+            SafeArea(
+              child: NavigationRail(
+                extended: constraints.maxWidth >= 600,
+                destinations: [
+                  NavigationRailDestination(
+                    icon: Icon(Icons.home),
+                    label: Text('Home'),
+                  ),
+                  NavigationRailDestination(
+                    icon: Icon(Icons.favorite),
+                    label: Text('Favorites'),
+                  ),
+                ],
+                selectedIndex: selectedIndex,
+                onDestinationSelected: (value) {
+                  setState(() {
+                    selectedIndex = value;
+                  });
+                },
+              ),
             ),
-          ),
-          // 가로 영역 분할
-          Expanded(
-            child: Container(
-              color: Theme.of(context).colorScheme.primaryContainer,
-              child: page,
+            // 가로 영역 분할
+            Expanded(
+              child: Container(
+                color: Theme.of(context).colorScheme.primaryContainer,
+                child: page,
+              ),
             ),
-          ),
-        ],
-      ),
-    );
+          ],
+        ),
+      );
+    });
   }
 }
 
+// home 화면
 class GeneratorPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -150,6 +156,39 @@ class GeneratorPage extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+// 좋아요 화면
+class LikePage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    var appState = context.watch<MyAppState>();
+    var messages = appState.messages;
+
+    var messageSize = appState.messages.length;
+
+    IconData icon = Icons.favorite;
+
+    return Center(
+        child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        SizedBox(
+          height: 30,
+        ),
+        Text('You have $messageSize favorite message :',
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+        for (var message in messages)
+          ListTile(
+            leading: Icon(icon),
+            title: Text(
+              message,
+              style: TextStyle(fontSize: 14),
+            ),
+          )
+      ],
+    ));
   }
 }
 

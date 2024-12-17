@@ -1,11 +1,13 @@
 import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/widget/pairList.dart';
 import 'package:provider/provider.dart';
 
 void main() {
   runApp(MyApp());
 }
 
+// 전체 애플리케이션 관리
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -28,22 +30,27 @@ class MyApp extends StatelessWidget {
 // 상태 및 핸들러 함수 class
 class MyAppState extends ChangeNotifier {
   var current = WordPair.random();
+  late String before;
 
   void getNext() {
+    before = current.asString;
     current = WordPair.random();
+
+    entireMessages.add(before);
     notifyListeners();
   }
 
   var favorites = <WordPair>[];
-  var messages = [];
+  var entireMessages = [];
+  var favoriteMessages = [];
 
   void toggleFavorite() {
     if (favorites.contains(current)) {
       favorites.remove(current);
-      messages.remove(current.asString);
+      favoriteMessages.remove(current.asString);
     } else {
       favorites.add(current);
-      messages.add(current.asString);
+      favoriteMessages.add(current.asString);
     }
 
     notifyListeners();
@@ -120,6 +127,7 @@ class GeneratorPage extends StatelessWidget {
   Widget build(BuildContext context) {
     var appState = context.watch<MyAppState>();
     var pair = appState.current;
+    var entireMessages = appState.entireMessages;
 
     IconData icon;
     if (appState.favorites.contains(pair)) {
@@ -132,6 +140,8 @@ class GeneratorPage extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          // for (var message in entireMessages) Text(message),
+          Pairlist(listValue: entireMessages),
           BigCard(pair: pair),
           SizedBox(height: 10),
           Row(
@@ -164,9 +174,9 @@ class LikePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<MyAppState>();
-    var messages = appState.messages;
+    var favoriteMessages = appState.favoriteMessages;
 
-    var messageSize = appState.messages.length;
+    var messageSize = appState.favoriteMessages.length;
 
     IconData icon = Icons.favorite;
 
@@ -179,12 +189,15 @@ class LikePage extends StatelessWidget {
         ),
         Text('You have $messageSize favorite message :',
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-        for (var message in messages)
+        for (var message in favoriteMessages)
           ListTile(
-            leading: Icon(icon),
+            leading: Icon(
+              icon,
+              color: Colors.red,
+            ),
             title: Text(
               message,
-              style: TextStyle(fontSize: 14),
+              style: TextStyle(fontSize: 14, color: Colors.red),
             ),
           )
       ],
@@ -207,14 +220,32 @@ class BigCard extends StatelessWidget {
       color: theme.colorScheme.onPrimary,
     );
 
+    final secondStyle = theme.textTheme.displayMedium!.copyWith(
+      color: theme.colorScheme.onPrimary,
+      fontWeight: FontWeight.bold,
+    );
+
     return Card(
       color: theme.colorScheme.primary,
       child: Padding(
         padding: const EdgeInsets.all(20),
-        child: Text(
-          pair.asLowerCase,
-          style: style,
-          semanticsLabel: "${pair.first} ${pair.second}",
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              pair.first,
+              style: style,
+              semanticsLabel: "${pair.first}",
+            ),
+            SizedBox(
+              width: 10,
+            ),
+            Text(
+              pair.second,
+              style: secondStyle,
+              semanticsLabel: "${pair.second}",
+            ),
+          ],
         ),
       ),
     );

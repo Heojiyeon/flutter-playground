@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "441976142687",
+    "project_id": "android-messaging-test-7c55c",
+    "storage_bucket": "android-messaging-test-7c55c.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:441976142687:android:bd3e7f0d3b121497f214ea",
+        "android_client_info": {
+          "package_name": "com.test.flutter_application_1"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCYzWQITKDHNXLUb4lSIqUqQpGwc2Hl9sU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

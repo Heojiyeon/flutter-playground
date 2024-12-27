@@ -1,10 +1,19 @@
 import 'package:english_words/english_words.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/pages/home.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
-void main() {
-  runApp(MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  String? fcmToken = await FirebaseMessaging.instance.getToken();
+  print(fcmToken);
+  runApp(const MyApp());
 }
 
 // 전체 애플리케이션 관리
